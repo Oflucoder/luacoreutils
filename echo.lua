@@ -6,13 +6,12 @@ local append_newline = true
 
 local function printing()
     for i = start_idx, #arg do
-    unistd.write(unistd.STDOUT_FILENO, arg[i] .. " ")
-    if i == #arg then
+        unistd.write(unistd.STDOUT_FILENO, arg[i] .. " " .. "\n")
 
     end
     if append_newline == true then
         unistd.write(unistd.STDOUT_FILENO, "\n")
-        end
+    end
 end
 if arg[1] == "-n" then
     start_idx = 2

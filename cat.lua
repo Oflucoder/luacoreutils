@@ -35,11 +35,11 @@ local function process_file(filename)
         else
             fd, err = fcntl.open(filename, fcntl.O_RDONLY)
             if not fd then
-            print("cat.lua: Error:" .. err)
+            print("cat: Error:" .. err)
             return
             end
     end
-    local chunk = unistd.read(fd, 1024)
+    local chunk = unistd.read(fd, 4096)
     while chunk and #chunk > 0 do
         chunk = global_buffer .. chunk
         global_buffer = ""
@@ -87,7 +87,7 @@ local function process_file(filename)
                     last_line_blank = (#line == 0)
                     end
 
-        chunk = unistd.read(fd, 1024)
+        chunk = unistd.read(fd, 4096)
     end
     if #global_buffer > 0 then
     local print_num = false
@@ -109,7 +109,6 @@ local function process_file(filename)
                 elseif show_ends then
                     unistd.write(unistd.STDOUT_FILENO, global_buffer .. "$\n")
                     else
-                        unistd.write(unistd.STDOUT_FILENO, global_buffer .. "\n")
                         end
                         global_buffer = ""
                         end
@@ -121,7 +120,7 @@ end
 
 for i = 1, #arg do
     if arg[i] == "-v" then
-        print("cat.lua Version 1.0")
+        unistd.write(unistd.STDOUT_FILENO, "cat:lua v1.0" .. "\n")
         os.exit(0)
         elseif arg[i] == "-n" or arg[i] == "--number" then
             number_lines = true
