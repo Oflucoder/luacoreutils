@@ -9,9 +9,10 @@ local lines = 0
 local words = 0
 local bytes = 0
 local in_word = false
-local current_len = 0
-local max_len = 0
-local max_len_doc = 0
+local total_max_line_len = 0
+local max_line_len = 0
+local current_line_len = 0
+local opt_max_len = false
 
 local function print_help()
     local help_text = [[
@@ -61,10 +62,17 @@ while chunk and #chunk > 0 do
     for  i = 1, #chunk do
 
         local c = string.sub(chunk, i, i)
+
             if c == "\n" then
                 lines = lines + 1
-            end
+                if current_line_len > max_line_len then
+                   max_line_len = current_line_len
 
+            end
+            current_line_len = 0
+            else
+                current_line_len = current_line_len +1
+            end
             if c == " " or c == "\t" or c == "\n" then
                 in_word = false
 
@@ -101,6 +109,8 @@ for i = 1, #arg do
     elseif arg[i] == "-l" or arg[i] == "--lines" then
         opt_lines = true
 
+    elseif arg[i] == "-L" or arg[i] == "--max-line-length" then
+        opt_max_len = true
     elseif arg[i] == "-v" or arg[i] == "--version" then
         unistd.write(unistd.STDOUT_FILENO, "wc:lua v1.0" .. "\n")
         os.exit(0)
@@ -110,7 +120,6 @@ for i = 1, #arg do
     else
         table.insert(files, arg[i])
     end
-
 
 
 end
@@ -125,8 +134,13 @@ for i = 1, #files  do
     words = 0
     bytes = 0
     in_word = false
+    max_line_len = 0
+    current_line_len = 0
     process_file(files[i])
 
+    if max_line_len > total_max_line_len then
+        total_max_line_len = max_line_len
+        end
 
 
 
@@ -136,6 +150,7 @@ for i = 1, #files  do
     total_words = total_words + words
 
     total_bytes = total_bytes + bytes
+
 
 
     local output = ""
@@ -158,6 +173,10 @@ for i = 1, #files  do
 
                 end
 
+                if opt_max_len == true then
+
+                    output = output .. " " .. max_line_len
+                end
 
 
                 output = output .. " " .. files[i] .. "\n"
@@ -173,7 +192,9 @@ if #files > 1 then
         end
     if opt_bytes == true then sum = sum .. " " .. total_bytes
         end
+    if opt_max_len == true then
+        sum = sum  .. " " .. total_max_line_len
+        end
     sum = sum .. " " .. "total\n"
     unistd.write(unistd.STDOUT_FILENO, sum)
 end
-
