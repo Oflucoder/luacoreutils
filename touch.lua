@@ -1,6 +1,7 @@
 local fcntl = require("posix.fcntl")
 local unistd = require("posix.unistd")
 local stat = require("posix.sys.stat")
+local utime = require("posix.utime")
 local atimechgonly = false
 local nocreate = false
 local mtimechgonly = false
@@ -68,8 +69,6 @@ for i = 1, #files do
                 if not nocreate then
                 local fd, err, errnum = fcntl.open(files[i], fcntl.O_CREAT + fcntl.O_WRONLY, 438)
                     if fd then unistd.close(fd) end
-                            else
-                                unistd.write(unistd.STDERR_FILENO, "touch: '" .. files[i] .. "' Error: File couldnt be created. " .. err .. "\n")
                                 end
                                 end
 
@@ -77,18 +76,18 @@ for i = 1, #files do
         local current_time = os.time()
         local success, err, errnum
 
-        if atimechgonly and not mtimechgonly then
-            success, err, errnum = stat.utimes(files[i], {
-                atime = { tv_sec = current_time, tv_usec = 0},
-                mtime = { tv_sec = info.st_mtime , tv_usec = 0}
-            })
-        elseif mtimechgonly and not atimechgonly then
-            success, err, errnum = stat.utimes(files[i], {
-                atime = { tv_sec = info.st_atime, tv_usec = 0},
-                mtime = { tv_sec = current_time, tv_usec = 0 }
-            })
+        if mtimechgonly and not atimechgonly then
+            success, err, errnum = utime.utime(files[i],
+                current_time,
+                info.st_mtime
+            )
+        elseif atimechgonly and not mtimechgonly then
+            success, err, errnum = utime.utime(files[i],
+                info.st_atime,
+                current_time
+            )
         else
-            success, err, errnum = stat.utimes(files[i], nil)
+            success, err, errnum = utime.utime(files[i], nil)
         end
         if not success then
             unistd.write(unistd.STDERR_FILENO, "touch: '" .. files[i] .. "' Time couldnt be updated: " .. err .. "\n")
