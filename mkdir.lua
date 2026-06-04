@@ -48,11 +48,16 @@ while i <= #arg do
                             i = i + 1
                     else
 
-                        table.insert(dirs, arg[i])
-                        i = i + 1
-                        end
-                        end
-
+                        if string.sub(arg[i], 1, 1) == "-" and #arg[i] > 1 then
+                            unistd.write(unistd.STDERR_FILENO, "mkdir: geçersiz seçenek -- '" .. arg[i] .. "'\n")
+                            unistd.write(unistd.STDERR_FILENO, "Daha fazla bilgi için 'mkdir --help' deneyin.\n")
+                        os.exit(1)
+                            else
+                                table.insert(dirs, arg[i])
+                                i = i + 1
+                            end
+                            end
+                            end
 if #dirs == 0 then
     unistd.write(unistd.STDERR_FILENO, "mkdir: eksik işlenen\nDaha fazla bilgi için 'mkdir --help' deneyin.\n")
     os.exit(1)
