@@ -118,10 +118,15 @@ for i = 1, #arg do
     print_help()
     os.exit(0)
     else
-        table.insert(files, arg[i])
+
+        if string.sub(arg[i], 1, 1) == "-" and #arg[i] > 1 then
+            unistd.write(unistd.STDERR_FILENO, "wc: geçersiz seçenek -- '" .. arg[i] .. "'\n")
+            unistd.write(unistd.STDERR_FILENO, "Daha fazla bilgi için 'wc --help' deneyin.\n")
+            os.exit(1)
+            else
+                table.insert(files, arg[i])
     end
-
-
+    end
 end
 if opt_bytes == false and opt_lines == false and opt_words == false then
     opt_lines = true

@@ -135,9 +135,16 @@ for i = 1, #arg do
         elseif arg[i] == "-h" or arg[i] == "--help" then
             print_help()
     else
-        files_given = true
-        process_file(arg[i])
+
+        if string.sub(arg[i], 1, 1) == "-" and #arg[i] > 1 then
+            unistd.write(unistd.STDERR_FILENO, "cat: geçersiz seçenek -- '" .. arg[i] .. "'\n")
+            unistd.write(unistd.STDERR_FILENO, "Daha fazla bilgi için 'cat --help' deneyin.\n")
+            os.exit(1)
+            else
+                files_given = true
+                process_file(arg[i])
     end
+end
 end
 
 if not files_given then
