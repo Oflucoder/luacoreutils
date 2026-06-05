@@ -2,6 +2,7 @@
 luac.out
 luastatic.lua
 file.txt
+.txt
 # luarocks build files
 *.src.rock
 *.zip
