@@ -91,7 +91,7 @@ elseif #lnargs == 2 then
     source = lnargs[1]
     target = lnargs[2]
 else
-    unistd.write(unistd.STDERR_FILENO, "ln: Too much arguements (link targets > 2 = WIP)")
+    unistd.write(unistd.STDERR_FILENO, "ln: Too much arguements. (link targets > 2 = WIP)")
     os.exit(1)
 end
 
