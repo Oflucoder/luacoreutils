@@ -1,2 +1,3 @@
 # luacoreutils
 Coreutils Rewritten in lua
+passion project, written for fun and learning lua...
